@@ -12,7 +12,7 @@
 void check_token(char *token ){
      if(!token)
        {
-            printf("Format ligne invalide");
+            printf("Format ligne invalide\n");
             exit(EXIT_FAILURE);
        }
 }
@@ -42,24 +42,28 @@ Chaines* lectureChaines(FILE *f){
     char buffer[256];
 
     // LIT LES DEUX PREMIERES LIGNES ET INITIALISE "chaine"
+    int temp;
 
     fgets(buffer,256,f);
     assert(strncmp(buffer,"NbChain:",8)==0);
-    sscanf(buffer,"NbChain: %d",chaine->nbChaines);
+    sscanf(buffer,"NbChain: %d",&temp);
+    chaine->nbChaines=temp;
 
     fgets(buffer,256,f);
     assert(strncmp(buffer,"Gamma:",6)==0);
-    sscanf(buffer,"Gamma: %d",chaine->gamma);
+    sscanf(buffer,"Gamma: %d",&temp);
+    chaine->gamma=temp;
 
     int i,n;
     char *token;
     CellChaine* cellChaine;
     CellPoint* point;
 
-    while (buffer[0]!='\0')
+    while (fgets(buffer,256,f))
     {
-       fgets(buffer,256,f); 
+        
        char *token=strtok(buffer," ");
+       printf("1-%s\n",token);
        check_token(token);
        i=0;
 
@@ -73,12 +77,14 @@ Chaines* lectureChaines(FILE *f){
         cellChaine->numero=atoi(token);
 
         token=strtok(NULL," ");
+        printf("2-%s\n",token);
         check_token(token);
         n=atoi(token);
         token=strtok(NULL," ");
+        printf("3-%s\n",token);
         check_token(token);
 
-        while (!token && i<n)
+        while (i<n)
         {
             // CREE LES POINTS ET LES INSERTS
             point=(CellPoint*)malloc(sizeof(CellPoint));
@@ -89,6 +95,7 @@ Chaines* lectureChaines(FILE *f){
 
             point->x=atof(token);
             token=strtok(NULL," ");
+            printf("4-%s\n",token);
             check_token(token);
             point->y=atof(token);
             token=strtok(NULL," ");
@@ -102,7 +109,7 @@ Chaines* lectureChaines(FILE *f){
     
 }
 
-void ecrireChaine(Chaines *C,FILE *f){
+void ecrireChaines(Chaines *C,FILE *f){
 
     check_pointer(C);
 
@@ -112,18 +119,19 @@ void ecrireChaine(Chaines *C,FILE *f){
     CellChaine *Ch=C->chaines;
     CellPoint* p;
     double buffer[256];
+    char cat[256],ftos[10];
     int i,counter,j;
 
-    
-            
-    while (!Ch)
+    printf("%p\n",Ch);
+
+    while (Ch)
     {
-    
+        printf("1\n");
         p=Ch->points;
         i=0;
         counter=0;
 
-        while (!p)
+        while (p)
         {
            buffer[i]=p->x;
            i++; 
@@ -137,10 +145,11 @@ void ecrireChaine(Chaines *C,FILE *f){
 
         for(j=0;j<i-1;j++)
         {
-            fprintf(f,"%f ",buffer[j]);
+            fprintf(f,"%.2f ",buffer[j]);
         }
 
-        fprintf(f,"%f\n",buffer[i-1]);
+        fprintf(f,"%.2f\n",buffer[i-1]);
+
 
         Ch=Ch->suiv;
 
@@ -236,5 +245,32 @@ int comptePointsTotal(Chaines *C){
 }
 
 
+// FONCTIONS DE LIBERATION
 
+void liberer_chaine(Chaines* C)
+{
+    check_pointer(C);
+
+    CellChaine* Chsuiv,*Ch=C->chaines;
+    CellPoint* p,*psuiv;
+
+    while (!Ch)
+    {
+        Chsuiv=Ch->suiv;
+        p=Ch->points;
+
+        while (!p)
+        {
+            psuiv=p->suiv;
+            free(p);
+            p=psuiv;
+        }
+        
+        free(Ch);
+        Ch=Chsuiv;
+    }
+    
+    free(C);
+
+}
 	
