@@ -31,7 +31,7 @@ typedef struct {
     CellCommodite *commodites;      /* Liste des commodites a relier */
 } Reseau;
 
-Noeud* rechercheCreeNoeudListe(Reseau *R, double x, double y);
+Noeud* rechercheCreeNoeudListe(Reseau *R, double x, double y,int* counter,int* signal);
 Reseau* reconstitueReseauListe(Chaines *C);
 void ecrireReseau(Reseau *R, FILE *f);
 int nbLiaisons(Reseau *R);

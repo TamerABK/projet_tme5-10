@@ -35,5 +35,6 @@ int main(int argc,char** argv){
 
     liberer_chaine(Ctest);
 
+    return 0;
 
 }
