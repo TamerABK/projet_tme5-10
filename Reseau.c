@@ -7,8 +7,28 @@
 #include <string.h>
 #include <math.h>
 
+void ajoutevoisin(Noeud* v1,Noeud* v2){
+   
 
-Noeud* rechercheCreeNoeudListe(Reseau *R,double x, double y,int* counter,int* signal)
+   CellNoeud* cell_curr=v1->voisins;
+   
+    //Verifie si les deux noeuds sont deja voisins    
+   while (cell_curr)
+   {
+        if(cell_curr->nd->num==v2->num) return ;
+        cell_curr=cell_curr->suiv;
+   }
+    // Ajoute le voisin s'il n'existe pas deja
+    CellNoeud* cell_cree=(CellNoeud*)malloc(sizeof(CellNoeud));
+    check_pointer(cell_cree);
+    cell_cree->nd=v2;
+    cell_cree->suiv=v1->voisins;
+    v1->voisins=cell_cree;
+
+}
+
+
+Noeud* rechercheCreeNoeudListe(Reseau *R,double x, double y,int* counter)
 {
     check_pointer(R);
 
@@ -20,13 +40,13 @@ Noeud* rechercheCreeNoeudListe(Reseau *R,double x, double y,int* counter,int* si
         N=Cn->nd;
         if(N->x==x && N->y==y)
         {
-            if(signal) *signal=0;
             return N;
         }
         Cn=Cn->suiv;
     }
 
-    
+    if(!Cn)
+    {
         N=(Noeud*)malloc(sizeof(Noeud));
         N->x=x;N->y=y;N->num=R->nbNoeuds+1;
         R->nbNoeuds++;
@@ -34,10 +54,10 @@ Noeud* rechercheCreeNoeudListe(Reseau *R,double x, double y,int* counter,int* si
         Cn->nd=N;Cn->suiv=R->noeuds;
         R->noeuds=Cn;
         if(counter) (*counter)++;
-        if(signal) *signal=1;
-    
+        return N;
+    }
 
-    return N;
+    
     
 }
 
@@ -52,8 +72,8 @@ Reseau* reconstitueReseauListe(Chaines *C){
     // Variable pour parcourir la chaine,compter les noeuds et cree les noeuds et commodite
     CellChaine *Cell_curr=C->chaines;
     CellPoint* point_curr;
-    int signal,counter=0;
-    Noeud* noeud_cree,* noeud_a_relier;
+    int counter=0;
+    Noeud* noeud_cree,* noeud_a_relier=NULL;
     CellNoeud* cellnoeud_cree;
     CellCommodite* commodite_cree;
 
@@ -61,39 +81,37 @@ Reseau* reconstitueReseauListe(Chaines *C){
     {
         point_curr=Cell_curr->points;
 
-        do
+        CellCommodite *commodite_cree=(CellCommodite*)malloc(sizeof(CellCommodite));
+
+        while (point_curr)
         {
-            noeud_cree= rechercheCreeNoeudListe(reseau,point_curr->x,point_curr->y,&counter,&signal);
+            noeud_cree= rechercheCreeNoeudListe(reseau,point_curr->x,point_curr->y,&counter);
+            
+            if (!commodite_cree->extrA) commodite_cree->extrA=noeud_cree;
 
-            // Si un noeud a ete cree rechercheCreeNoeudListe met le signal a un et une CellNoeud est cree et ajoute au reseau
-            if (signal)
-            {
-                cellnoeud_cree=(CellNoeud*)malloc(sizeof(CellNoeud));
-                cellnoeud_cree->nd=noeud_cree;
-                cellnoeud_cree->suiv=reseau->noeuds;
-                reseau->noeuds=cellnoeud_cree;
-            }
-            // Cree une commodite entre le noeud cree ou courrant et le noeud precedant dans la chaine
-            if (noeud_a_relier)
-            {
-                commodite_cree=(CellCommodite*)malloc(sizeof(CellCommodite));
-                commodite_cree->extrA=noeud_a_relier;
-                commodite_cree->extrB=noeud_cree;
-                commodite_cree->suiv=reseau->commodites;
-                reseau->commodites=commodite_cree;
-                noeud_a_relier=noeud_cree;
-            }
-
+            
+            if (noeud_a_relier){
+                ajoutevoisin(noeud_cree,noeud_a_relier);
+                ajoutevoisin(noeud_a_relier,noeud_cree);
+            } 
+                
+            
+            noeud_a_relier=noeud_cree;
             point_curr=point_curr->suiv;
-        
-        }while (point_curr);
-        
+
+        }
+        // Cree une commodite
+        commodite_cree->extrB=noeud_a_relier;
+        commodite_cree->suiv=reseau->commodites;
+        reseau->commodites=commodite_cree;
+
         Cell_curr=Cell_curr->suiv;
+        noeud_a_relier=NULL;
 
     }
 
     reseau->nbNoeuds=counter;
-
+    
     return reseau;
 
     
@@ -142,4 +160,89 @@ int nbCommodites(Reseau *R){
 
     return counter;
     
+}
+
+int nbLiaisons(Reseau *R){
+    check_pointer(R);
+
+    int counter=0;
+    CellNoeud  *cell_noeud_vois;
+    CellNoeud *cell_noeud_curr=R->noeuds;
+
+    while (cell_noeud_curr)
+    {
+        cell_noeud_vois=cell_noeud_curr->nd->voisins;
+
+        while (cell_noeud_vois)
+        {
+            if (cell_noeud_curr->nd->num < cell_noeud_vois->nd->num)
+            {
+                counter++;
+            }
+            cell_noeud_vois=cell_noeud_vois->suiv;
+        }
+
+        cell_noeud_curr=cell_noeud_curr->suiv;
+        
+    }
+
+    return counter/*(int)(ceil((float)counter/2))*/;
+    
+}
+
+
+// FONCTION D'ECRITURE
+
+void ecrireReseau(Reseau *R, FILE *F){
+    check_pointer(R);
+    check_pointer(F);
+
+    fprintf(F,"NbNoeuds: %d\n",R->nbNoeuds);
+    fprintf(F,"NbLiaisons: %d\n",nbLiaisons(R));
+    fprintf(F,"NbCommodites: %d\n",nbCommodites(R));
+    fprintf(F,"Gamma: %d\n\n",R->gamma);
+
+    CellNoeud* cell_noeud_curr=R->noeuds;
+
+    while (cell_noeud_curr)
+    {
+        printf("%p\n",cell_noeud_curr);
+        fprintf(F,"v %d %f %f\n",cell_noeud_curr->nd->num,cell_noeud_curr->nd->x,cell_noeud_curr->nd->y);
+        cell_noeud_curr=cell_noeud_curr->suiv;
+    }
+    
+    fprintf(F,"\n");
+
+    cell_noeud_curr=R->noeuds;
+    CellNoeud  *cell_noeud_vois;
+
+    while (cell_noeud_curr)
+    {
+        cell_noeud_vois=cell_noeud_curr->nd->voisins;
+
+        while (cell_noeud_vois)
+        {
+            if (cell_noeud_curr->nd->num < cell_noeud_vois->nd->num)
+            {
+                fprintf(F,"l %d %d\n",cell_noeud_curr->nd->num,cell_noeud_vois->nd->num);
+            }
+            cell_noeud_vois=cell_noeud_vois->suiv;
+        }
+
+        cell_noeud_curr=cell_noeud_curr->suiv;
+        
+    }
+
+
+    fprintf(F,"\n");
+
+    CellCommodite* cell_commod_curr=R->commodites;
+
+    while (cell_commod_curr)
+    {
+        fprintf(F,"k %d %d\n",cell_commod_curr->extrA->num,cell_commod_curr->extrB->num);
+        cell_commod_curr=cell_commod_curr->suiv;
+    }
+    
+
 }

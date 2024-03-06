@@ -63,7 +63,6 @@ Chaines* lectureChaines(FILE *f){
     {
         
        char *token=strtok(buffer," ");
-       printf("1-%s\n",token);
        check_token(token);
        i=0;
 
@@ -77,11 +76,10 @@ Chaines* lectureChaines(FILE *f){
         cellChaine->numero=atoi(token);
 
         token=strtok(NULL," ");
-        printf("2-%s\n",token);
         check_token(token);
         n=atoi(token);
         token=strtok(NULL," ");
-        printf("3-%s\n",token);
+    
         check_token(token);
 
         while (i<n)
@@ -95,7 +93,6 @@ Chaines* lectureChaines(FILE *f){
 
             point->x=atof(token);
             token=strtok(NULL," ");
-            printf("4-%s\n",token);
             check_token(token);
             point->y=atof(token);
             token=strtok(NULL," ");
@@ -234,7 +231,7 @@ int comptePointsTotal(Chaines *C){
 	int total=0;
 	CellChaine* curChaine = C->chaines;
 	while(curChaine !=NULL){
-		CellPoint* curPoint = C->chaines->points;
+		CellPoint* curPoint = curChaine->points;
 		while(curPoint != NULL){
 			total+=1;
 			curPoint=curPoint->suiv;
