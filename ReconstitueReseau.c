@@ -29,16 +29,17 @@ int main(int argc,char** argv){
     if(methode_choisie==1)
     {
         Reseau* reseau_listeCh=reconstitueReseauListe(chaine);
-        afficheReseauSVG(reseau_listeCh,"testreseau");
+        afficheReseauSVG(reseau_listeCh,"testreseauLCH");
         ecrireReseau(reseau_listeCh,fEcriture);
     }
     
     if(methode_choisie==2)
     {
-        for(int i=1;i<11;i++){
-            for(int j=1;j<11;j++){
-                printf("%d\n",fonctionHachage(fonctionClef(i,j),100));
-            }
-        }
+        Reseau* reseau_tableH=reconstitueReseauHachage(chaine,50);
+        afficheReseauSVG(reseau_tableH,"testreseauH");
+        ecrireReseau(reseau_tableH,fEcriture);
     }
+
+    fclose(fLecture);
+    fclose(fEcriture);
 }

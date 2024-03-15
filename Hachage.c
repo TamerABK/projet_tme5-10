@@ -29,7 +29,7 @@ TableHachage* cree_table_hachage(int m){
 
     table_H->tailleMax=m;
     table_H->nbElement=0;
-    table_H->T=(CellNoeud*)malloc(m*sizeof(CellNoeud*));
+    table_H->T=(CellNoeud**)malloc(m*sizeof(CellNoeud*));
 
     for (int i=0;i<m;i++){
         table_H->T[i]=NULL;
@@ -74,3 +74,68 @@ Noeud* rechercheCreeNoeudHachage(Reseau *R,TableHachage *H, double x, double y){
         return N;
     }
 }
+
+//Fonction pour créer un réseau vide
+
+Reseau* creerReseauVide(){
+	Reseau* res=(Reseau*)malloc(sizeof(Reseau));
+	if(res==NULL){
+		return NULL;
+	}
+	res->nbNoeuds=0;
+	res->gamma=0;
+	res->noeuds=NULL;
+	res->commodites=NULL;
+	return res;
+}
+
+Reseau* reconstitueReseauHachage(Chaines *C, int M){
+    check_pointer(C);
+
+    Reseau* reseau = creerReseauVide();
+    TableHachage* H = cree_table_hachage(M);
+    reseau->gamma=C->gamma;
+    CellChaine *Cell_curr=C->chaines;
+    CellPoint* pt;
+    CellCommodite *commodite_cree;
+    Noeud* nouveau,*noeud_a_relier; 
+    
+    while (Cell_curr)
+    {
+        
+        pt = Cell_curr->points;
+
+        commodite_cree=(CellCommodite*)malloc(sizeof(CellCommodite));
+
+        while(pt != NULL){
+            Noeud* nouveau = rechercheCreeNoeudHachage(reseau, H, pt->x, pt->y);
+            
+            if (!commodite_cree->extrA) commodite_cree->extrA=nouveau;
+
+            if (noeud_a_relier){
+                ajoutevoisin(nouveau,noeud_a_relier);
+                ajoutevoisin(noeud_a_relier,nouveau);
+            } 
+
+            noeud_a_relier=nouveau;
+            pt = pt->suiv;
+        }
+
+        commodite_cree->extrB=noeud_a_relier;
+        commodite_cree->suiv=reseau->commodites;
+        reseau->commodites=commodite_cree;
+        noeud_a_relier=NULL;
+
+        Cell_curr=Cell_curr->suiv;
+
+    }
+    
+    reseau->nbNoeuds=H->nbElement;
+
+    return reseau;
+}	
+	
+		
+		
+		
+
