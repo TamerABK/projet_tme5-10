@@ -246,3 +246,30 @@ void ecrireReseau(Reseau *R, FILE *F){
     
 
 }
+
+
+void liberer_reseau(Reseau *R){
+    check_pointer(R);
+
+    CellCommodite* commod_suiv,* commod_curr= R->commodites;
+
+    while (commod_curr)
+    {
+        commod_suiv=commod_curr->suiv;
+        free(commod_curr);
+        commod_curr=commod_suiv;
+    }
+
+    CellNoeud* cell_suiv,* cell_curr=R->noeuds;
+
+    while (cell_curr)
+    {
+        cell_suiv=cell_curr->suiv;
+        free(cell_curr->nd);
+        free(cell_curr);
+        cell_curr=cell_suiv;
+    }
+
+    free(R);
+    
+}

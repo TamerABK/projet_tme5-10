@@ -22,5 +22,8 @@ double coteY);
 ArbreQuat** trouve_dir(ArbreQuat* parent,int x, int y);
 void insererNoeudArbre(Noeud* n, ArbreQuat** a,ArbreQuat* parent);
 Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent,double x, double y);
+void creerListeCommodites(Chaines* C, Reseau* R);
+void libererArbreQuat(ArbreQuat* a);
+Reseau* reconstitueReseauArbre(Chaines* C);
 
 #endif
