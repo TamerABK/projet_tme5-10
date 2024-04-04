@@ -12,18 +12,18 @@
 
 int main(int argc,char** argv){
 
-    //  if (argc!=3)
-    //  {
-    //     printf("Mauvais nombre d'argument\n");
-    //      exit(EXIT_FAILURE);
-    // }
+    if (argc!=3)
+    {
+         printf("Mauvais nombre d'argument\n");
+          exit(EXIT_FAILURE);
+    }
 
-    FILE* fLecture=fopen("00014_burma.cha","r");
+    FILE* fLecture=fopen(argv[1],"r");
     check_pointer(fLecture);
     FILE* fEcriture=fopen("test2.res","w");
     check_pointer(fEcriture);
 
-    int methode_choisie=atoi(argv[1]);
+    int methode_choisie=atoi(argv[2]);
 
     Chaines* chaine=lectureChaines(fLecture);
 
@@ -46,9 +46,9 @@ int main(int argc,char** argv){
     if(methode_choisie==3)
     {
         Reseau* reseau_arbreQ=reconstitueReseauArbre(chaine);
-        // afficheReseauSVG(reseau_arbreQ,"testreseauAQ");
-        // ecrireReseau(reseau_arbreQ,fEcriture);
-        // liberer_reseau(reseau_arbreQ);
+        afficheReseauSVG(reseau_arbreQ,"testreseauAQ");
+        ecrireReseau(reseau_arbreQ,fEcriture);
+        liberer_reseau(reseau_arbreQ);
     }
 
     liberer_chaine(chaine);

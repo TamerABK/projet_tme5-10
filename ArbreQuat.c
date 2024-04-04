@@ -65,7 +65,7 @@ ArbreQuat* creerArbreQuat(double xc, double yc, double coteX,double coteY){
 	return ab;
 }
 
-ArbreQuat** trouve_dir(ArbreQuat* parent,int x, int y){
+ArbreQuat* trouve_dir(ArbreQuat* parent,int x, int y){
 	
 	check_pointer(parent);
 
@@ -73,17 +73,17 @@ ArbreQuat** trouve_dir(ArbreQuat* parent,int x, int y){
 	{
 		if (parent->yc<=y)
 		{
-			return &(parent->ne);
+			return (parent->ne);
 		}else{
-			return &(parent->se);
+			return (parent->se);
 		}
 		
 	}else{
 		if (parent->yc<=y)
 		{
-			return &(parent->no);
+			return (parent->no);
 		}else{
-			return &(parent->so);
+			return (parent->so);
 		}
 	}
 }
@@ -124,7 +124,6 @@ void insererNoeudArbre(Noeud* n, ArbreQuat** a,ArbreQuat* parent){
 		calcul_centre(parent,n,&x,&y);
 		*a=creerArbreQuat(x,y,coteX,coteY);
 		(*a)->noeud=n;
-		printf("J'ai finit l'insertion cas 1\n");
 		return;
     }
 
@@ -134,13 +133,11 @@ void insererNoeudArbre(Noeud* n, ArbreQuat** a,ArbreQuat* parent){
 	{
 		Noeud* noeud_deplace=(*a)->noeud;
 		(*a)->noeud=NULL;
-		printf("J'entre dans le cas 2\n");
-		ArbreQuat** direction=trouve_dir(*a,noeud_deplace->x,noeud_deplace->y);
-		if (*direction=*a) return;
-		insererNoeudArbre(noeud_deplace,direction,*a);
+		ArbreQuat* direction=trouve_dir(*a,noeud_deplace->x,noeud_deplace->y);
+		insererNoeudArbre(noeud_deplace,&direction,*a);
 
 		direction=trouve_dir(*a,n->x,n->y);
-		insererNoeudArbre(n,direction,*a);
+		insererNoeudArbre(n,&direction,*a);
 		
 		
 		return;
@@ -149,9 +146,8 @@ void insererNoeudArbre(Noeud* n, ArbreQuat** a,ArbreQuat* parent){
 	if((*a !=NULL)&&(*a)->noeud==NULL )
 	{	
 		
-		ArbreQuat** direction=trouve_dir(*a,n->x,n->y);
-		printf("J'entre dans le cas 3\n");
-		insererNoeudArbre(n,direction,*a);
+		ArbreQuat* direction=trouve_dir(*a,n->x,n->y);
+		insererNoeudArbre(n,&direction,*a);
 		
 		return;
 	}
@@ -175,7 +171,6 @@ Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent,doubl
 	// a est vide
 	if (!(*a))
 	{	
-		printf("a est null\n");
 		Noeud* noeud_cree= ajouteCellReseau(R,x,y);
 		insererNoeudArbre(noeud_cree,a,parent);
 		return noeud_cree;
@@ -183,10 +178,8 @@ Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent,doubl
 	// a est une feuille
 	if((*a)->noeud!=NULL)
 	{
-		printf("a est une feuille\n");
 		if((*a)->noeud->x==x &&(*a)->noeud->y==y)
 		{	
-			printf("Le noeud existe\n");
 			return (*a)->noeud;
 		}else{
 			Noeud* noeud_cree= ajouteCellReseau(R,x,y);
@@ -197,9 +190,8 @@ Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent,doubl
 	// a est une cellule
 	if((*a !=NULL)&&(*a)->noeud==NULL)
 	{
-		printf("a est une cellule\n");
-		ArbreQuat** direction=trouve_dir(*a,x,y);
-		rechercheCreeNoeudArbre(R,direction,*a,x,y);
+		ArbreQuat* direction=trouve_dir(*a,x,y);
+		rechercheCreeNoeudArbre(R,&direction,*a,x,y);
 	}
 
 
@@ -252,7 +244,7 @@ Reseau* reconstitueReseauArbre(Chaines* C) {
 	CellPoint* pt=NULL;
     CellCommodite *commodite_cree=NULL;
     Noeud* nouveau=NULL,*noeud_a_relier=NULL;
-	ArbreQuat** fils=NULL; 
+	ArbreQuat* fils=NULL; 
 
 	reseau->nbNoeuds=0;
 	reseau->gamma=C->gamma;
@@ -268,24 +260,18 @@ Reseau* reconstitueReseauArbre(Chaines* C) {
 	ArbreQuat* arbre = creerArbreQuat(xc, yc, coteX,coteY); 
 	while (Cell_curr)
     {
-        printf("1_%p\n",Cell_curr);
         pt = Cell_curr->points;
 
         commodite_cree=(CellCommodite*)malloc(sizeof(CellCommodite));
 
         while(pt != NULL){
-			printf("2_%p\n",Cell_curr);
 			fils=trouve_dir(arbre,pt->x,pt->y);
-            Noeud* nouveau = rechercheCreeNoeudArbre(reseau,fils,arbre,pt->x,pt->y);
-            printf("3\n");
+            nouveau = rechercheCreeNoeudArbre(reseau,&fils,arbre,pt->x,pt->y);
             if (!commodite_cree->extrA) commodite_cree->extrA=nouveau;
-			printf("4-%p\n",noeud_a_relier);
             if (noeud_a_relier){
                 ajoutevoisin(nouveau,noeud_a_relier);
-				printf("Next\n");
                 ajoutevoisin(noeud_a_relier,nouveau);
             } 
-			printf("5\n");
             noeud_a_relier=nouveau;
             pt = pt->suiv;
         }
