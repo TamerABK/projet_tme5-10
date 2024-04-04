@@ -20,7 +20,9 @@ ymin, double* xmax, double* ymax);
 ArbreQuat* creerArbreQuat(double xc, double yc, double coteX,
 double coteY);
 ArbreQuat** trouve_dir(ArbreQuat* parent,int x, int y);
+void calcul_centre(ArbreQuat* parent,Noeud *n, double *xnew, double *ynew);
 void insererNoeudArbre(Noeud* n, ArbreQuat** a,ArbreQuat* parent);
+Noeud* ajouteCellReseau(Reseau *R,double x, double y);
 Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent,double x, double y);
 void creerListeCommodites(Chaines* C, Reseau* R);
 void libererArbreQuat(ArbreQuat* a);

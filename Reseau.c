@@ -9,21 +9,31 @@
 
 void ajoutevoisin(Noeud* v1,Noeud* v2){
    
+    check_pointer(v1);
+    check_pointer(v2);
 
+    printf("Ajv1-%p\n",v1->voisins);
    CellNoeud* cell_curr=v1->voisins;
    
     //Verifie si les deux noeuds sont deja voisins    
    while (cell_curr)
    {
-        if(cell_curr->nd->num==v2->num) return ;
+        printf("Ajv2-%p\n",cell_curr->nd);
+        
+        if(cell_curr->nd->num==v2->num){ printf("On sort\n"); return ;}
         cell_curr=cell_curr->suiv;
    }
     // Ajoute le voisin s'il n'existe pas deja
+    
     CellNoeud* cell_cree=(CellNoeud*)malloc(sizeof(CellNoeud));
     check_pointer(cell_cree);
+    printf("Ajv3\n");
     cell_cree->nd=v2;
+    printf("Ajv4\n");
     cell_cree->suiv=v1->voisins;
+    printf("Ajv5\n");
     v1->voisins=cell_cree;
+    printf("Ajv6\n");
 
 }
 

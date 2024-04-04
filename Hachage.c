@@ -98,7 +98,7 @@ Reseau* reconstitueReseauHachage(Chaines *C, int M){
     CellChaine *Cell_curr=C->chaines;
     CellPoint* pt;
     CellCommodite *commodite_cree;
-    Noeud* nouveau,*noeud_a_relier; 
+    Noeud* nouveau=NULL,*noeud_a_relier=NULL; 
     
     while (Cell_curr)
     {
@@ -108,7 +108,7 @@ Reseau* reconstitueReseauHachage(Chaines *C, int M){
         commodite_cree=(CellCommodite*)malloc(sizeof(CellCommodite));
 
         while(pt != NULL){
-            Noeud* nouveau = rechercheCreeNoeudHachage(reseau, H, pt->x, pt->y);
+            nouveau = rechercheCreeNoeudHachage(reseau, H, pt->x, pt->y);
             
             if (!commodite_cree->extrA) commodite_cree->extrA=nouveau;
 
