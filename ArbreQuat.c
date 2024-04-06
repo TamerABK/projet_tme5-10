@@ -72,18 +72,22 @@ ArbreQuat* trouve_dir(ArbreQuat* parent,int x, int y){
 	if(parent->xc<=x)
 	{
 		if (parent->yc<=y)
-		{
-			return (parent->ne);
+		{	
+			printf("Nord est\n");
+			return parent->ne;
 		}else{
-			return (parent->se);
+			printf("Sud est\n");
+			return parent->se;
 		}
 		
 	}else{
 		if (parent->yc<=y)
 		{
-			return (parent->no);
+			printf("Nord ouest\n");
+			return parent->no;
 		}else{
-			return (parent->so);
+			printf("Sud ouest\n");
+			return parent->so;
 		}
 	}
 }
@@ -112,11 +116,10 @@ void calcul_centre(ArbreQuat* parent,Noeud *n, double *xnew, double *ynew){
 
 
 void insererNoeudArbre(Noeud* n, ArbreQuat** a,ArbreQuat* parent){
-
 	check_pointer(parent);
 	check_pointer(n);
 	// Si a est vide
-	if (!(*a))
+	if (*a==NULL)
 	{
 		int coteX=parent->xc/2;
 		int coteY=parent->yc/2;
@@ -169,7 +172,8 @@ Noeud* ajouteCellReseau(Reseau *R,double x, double y){
 
 Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent,double x, double y){
 	// a est vide
-	if (!(*a))
+
+	if (*a==NULL)
 	{	
 		Noeud* noeud_cree= ajouteCellReseau(R,x,y);
 		insererNoeudArbre(noeud_cree,a,parent);
@@ -178,11 +182,17 @@ Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent,doubl
 	// a est une feuille
 	if((*a)->noeud!=NULL)
 	{
-		if((*a)->noeud->x==x &&(*a)->noeud->y==y)
+		
+		if(((*a)->noeud->x!=x) &&((*a)->noeud->y!=y))
 		{	
+			
 			return (*a)->noeud;
 		}else{
-			Noeud* noeud_cree= ajouteCellReseau(R,x,y);
+			// Noeud* noeud_cree= ajouteCellReseau(R,x,y);
+
+			Noeud* noeud_cree=(Noeud*)malloc(sizeof(Noeud));
+			noeud_cree->x=x;
+			noeud_cree->y=y;
 			insererNoeudArbre(noeud_cree,a,parent);
 			return noeud_cree;
 		}
@@ -195,32 +205,6 @@ Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent,doubl
 	}
 
 
-}
-
-void creerListeCommodites(Chaines* C, Reseau* R) {
-    CellCommodite* commodites = NULL;
-    
-    for (int i = 0; i < C->nbChaines; i++) {
-        CellChaine* chaine = C->chaines;
-        while (chaine != NULL) {
-            CellPoint* p1 = chaine->points;
-            CellPoint* p2 = chaine->points->suiv;
-            
-            Noeud* extrA = rechercheCreeNoeudListe(R, p1->x, p1->y,NULL);
-            Noeud* extrB = rechercheCreeNoeudListe(R, p2->x, p2->y,NULL);
-            
-            CellCommodite* nouvelle_commodite = (CellCommodite*)malloc(sizeof(CellCommodite));
-            nouvelle_commodite->extrA = extrA;
-            nouvelle_commodite->extrB = extrB;
-            nouvelle_commodite->suiv = commodites;
-            
-            commodites = nouvelle_commodite;
-            
-            chaine = chaine->suiv;
-        }
-    }
-    
-    R->commodites = commodites;
 }
 
 
@@ -266,6 +250,7 @@ Reseau* reconstitueReseauArbre(Chaines* C) {
 
         while(pt != NULL){
 			fils=trouve_dir(arbre,pt->x,pt->y);
+			printf("%p\n",fils);
             nouveau = rechercheCreeNoeudArbre(reseau,&fils,arbre,pt->x,pt->y);
             if (!commodite_cree->extrA) commodite_cree->extrA=nouveau;
             if (noeud_a_relier){
@@ -287,7 +272,7 @@ Reseau* reconstitueReseauArbre(Chaines* C) {
 
 	
     libererArbreQuat(arbre);
-
+	printf("%d\n", reseau->nbNoeuds);
     return reseau;
 }
 
