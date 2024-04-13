@@ -1,9 +1,9 @@
 CFLAGS = -g -Wno-unused-parameter -ggdb
 CC = gcc
 
-LIST= ChaineMain ReconstitueReseau
+LIST= ChaineMain ReconstitueReseau GenereAlea
 
-all: ChaineMain ReconstitueReseau
+all: ChaineMain ReconstitueReseau GenereAlea
 
 Chaine: Chaine.o Chaine.h SVGwriter.h
 	$(CC) -o $@ $(CFLAGS) $^ -lm
@@ -25,6 +25,9 @@ ChaineMain: Chaine.o SVGwriter.o ChaineMain.o
 
 ReconstitueReseau: ReconstitueReseau.o Chaine.o SVGwriter.o Reseau.o Hachage.o ArbreQuat.o
 	$(CC) -o $@ $(CFLAGS) $^ -lm
+
+GenereAlea: GenereAlea.o Chaine.o SVGwriter.o
+	$(CC) -o $@ $(CFLAGS) $^ -lm	
 
 clean:
 	rm -f *.o *~ *.html $(LIST)
