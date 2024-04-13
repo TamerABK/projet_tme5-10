@@ -12,11 +12,10 @@ Chaines* generationAleatoire(int nbChaines, int nbPointsChaine, int xmax, int ym
     
     C->nbChaines = nbChaines;
     C->gamma = 1; // Valeur par défaut pour gamma
-
-    // Initialisation de la graine pour la génération aléatoire
+    
     srand(time(NULL));
 
-    // Création de la première chaîne
+    // première chaine
     C->chaines = (CellChaine*)malloc(sizeof(CellChaine));
     if (C->chaines == NULL) {
         fprintf(stderr, "Erreur d'allocation de mémoire pour la première chaîne.\n");
