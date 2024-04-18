@@ -16,10 +16,13 @@ void enfile(S_file * f, int donnee){
   nouv->val=donnee;
   nouv->suiv=NULL;
   if (f->tete==NULL)
+  {
     f->tete=nouv;
-  else
+    f->dernier=nouv;
+  }else{
     f->dernier->suiv=nouv;
-  f->dernier=nouv;
+    f->dernier=nouv;
+  }
 }
 
 
@@ -32,4 +35,18 @@ int defile(S_file *f){
   free(temp);
   return v;
 
+}
+
+void affiche_file(S_file *f){
+
+  Cellule_file* fl=f->tete;
+
+  while (fl)
+  {
+    printf("%d ",fl->val);
+    fl=fl->suiv;
+  }
+
+  printf("\n");
+  
 }

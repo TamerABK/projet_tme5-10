@@ -3,6 +3,8 @@
 #include "Hachage.h"
 #include"ArbreQuat.h"
 #include "SVGwriter.h"
+#include "Graphe.h"
+#include "Struct_File.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,18 +14,20 @@
 
 int main(int argc,char** argv){
 
-    if (argc!=3)
-    {
-         printf("Mauvais nombre d'argument\n");
-          exit(EXIT_FAILURE);
-    }
+    // if (argc!=3)
+    // {
+    //      printf("Mauvais nombre d'argument\n");
+    //       exit(EXIT_FAILURE);
+    // }
 
-    FILE* fLecture=fopen(argv[1],"r");
+    // FILE* fLecture=fopen(argv[1],"r");
+    FILE* fLecture=fopen("00014_burma.cha","r");
     check_pointer(fLecture);
     FILE* fEcriture=fopen("test2.res","w");
     check_pointer(fEcriture);
 
-    int methode_choisie=atoi(argv[2]);
+    // int methode_choisie=atoi(argv[2]);
+    int methode_choisie=1;
 
     Chaines* chaine=lectureChaines(fLecture);
 
@@ -68,8 +72,26 @@ int main(int argc,char** argv){
         liberer_reseau(reseau_arbreQ);
     }
 
-    if(methode_choisie > 3){
-        printf("Méthode inexistante, veuillez choisir 1 2 ou 3\n");
+
+    if(methode_choisie==4)
+    {
+        Reseau* reseau_tableH=reconstitueReseauHachage(chaine,50);
+        Graphe* graphe= creerGraphe(reseau_tableH);
+
+        affiche_graphe(graphe);
+
+        int* distance=PP_chemin(graphe,1);
+        for (int i=1;i<graphe->nbsom+1;i++)
+        {
+            printf("Distance 1 %d: %d\n",i,distance[i]);
+        }
+
+        free(distance);
+
+    }
+
+    if(methode_choisie > 4){
+        printf("Méthode inexistante, veuillez choisir 1, 2, 3 ou 4.\n");
     }
 
     liberer_chaine(chaine);

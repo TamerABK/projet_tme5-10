@@ -9,6 +9,7 @@
 #include <math.h>
 #include <time.h>
 #include "Reseau.h"
+#include "Struct_File.h"
 
 typedef struct 
 {
@@ -47,7 +48,9 @@ Sommet* creerSommet(Noeud* N);
 void ajout_arrete(Sommet* s1,Sommet* s2);
 Commod creerCommod(CellCommodite* C);
 Graphe* creerGraphe(Reseau* r);
-
+int determine_voisin(Cellule_arete* C,int num);
+int* PP_chemin(Graphe* G,int debut);
+void affiche_graphe(Graphe* G);
 
 #endif 
 

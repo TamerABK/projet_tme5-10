@@ -23,7 +23,13 @@ SVGwriter: SVGwriter.o SVGwriter.h
 ChaineMain: Chaine.o SVGwriter.o ChaineMain.o
 	$(CC) -o $@ $(CFLAGS) $^ -lm
 
-ReconstitueReseau: ReconstitueReseau.o Chaine.o SVGwriter.o Reseau.o Hachage.o ArbreQuat.o
+Struct_File: Struct_File.o Struct_File.h
+	$(CC) -o $@ $(CFLAGS) $^ -lm
+
+Graphe: Graphe.o Struct_File.o Reseau.o Chaine.o Struct_File.h
+	$(CC) -o $@ $(CFLAGS) $^ -lm
+
+ReconstitueReseau: ReconstitueReseau.o Chaine.o SVGwriter.o Reseau.o Hachage.o ArbreQuat.o Graphe.o Struct_File.o
 	$(CC) -o $@ $(CFLAGS) $^ -lm
 
 GenereAlea: GenereAlea.o Chaine.o SVGwriter.o
