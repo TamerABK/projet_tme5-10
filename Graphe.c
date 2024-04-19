@@ -124,7 +124,7 @@ int determine_voisin(Cellule_arete* C,int num){
     return u;
 }
 
-int* PP_chemin(Graphe* G,int debut){
+int* parcour_en_largeur(Graphe* G,int debut){
     
     // Initialisation du tableau distance et file
     
@@ -137,7 +137,7 @@ int* PP_chemin(Graphe* G,int debut){
     
     }
 
-    // Cas special
+    // Initialisation: Distance debut a lui meme
     distance[debut]=0;
     
     S_file* File=malloc(sizeof(S_file));
@@ -168,7 +168,59 @@ int* PP_chemin(Graphe* G,int debut){
         }
     }
     
+    free(File);
     return distance;
+}
+
+S_file** PP_chemins(Graphe* G,int debut){
+
+    if(debut==0) return NULL;
+
+    S_file** Chemins=(S_file**)malloc(sizeof(S_file*)*G->nbsom+1);
+    for (int i=0;i<G->nbsom+1;i++)
+    {
+        Chemins[i]=(S_file*)malloc(sizeof(S_file));
+        Init_file(Chemins[i]);
+    }
+
+    // Initialisation: Chemin du debut a lui meme
+    enfile(Chemins[debut],debut);
+
+    S_file* File=malloc(sizeof(S_file));
+    enfile(File,debut);
+    Sommet* somm_cur=NULL;
+    Cellule_arete* cell_cur=NULL;
+    int num,voisin;
+
+    while (!estFileVide(File))
+    {
+        num=defile(File);
+        somm_cur=G->T_som[num];
+        cell_cur=somm_cur->L_voisin; 
+
+         while (cell_cur)
+        {   
+            
+            voisin=determine_voisin(cell_cur,num);
+
+
+            if (estFileVide(Chemins[voisin]))
+            {
+                enfile(File,voisin);
+                // La file de pere + le fils en fin
+                clone_file(Chemins[num],Chemins[voisin]);
+                enfile(Chemins[voisin],voisin);
+            }
+
+            cell_cur=cell_cur->suiv;
+        }
+
+    }
+    
+    free(File);
+    return Chemins;
+
+
 }
 
 

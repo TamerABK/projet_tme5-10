@@ -14,20 +14,19 @@
 
 int main(int argc,char** argv){
 
-    // if (argc!=3)
-    // {
-    //      printf("Mauvais nombre d'argument\n");
-    //       exit(EXIT_FAILURE);
-    // }
+    if (argc!=3)
+    {
+          printf("Mauvais nombre d'argument\n");
+          exit(EXIT_FAILURE);
+     }
 
-    // FILE* fLecture=fopen(argv[1],"r");
-    FILE* fLecture=fopen("00014_burma.cha","r");
+    FILE* fLecture=fopen(argv[1],"r");
+    // FILE* fLecture=fopen("00014_burma.cha","r");
     check_pointer(fLecture);
     FILE* fEcriture=fopen("test2.res","w");
     check_pointer(fEcriture);
 
-    // int methode_choisie=atoi(argv[2]);
-    int methode_choisie=1;
+    int methode_choisie=atoi(argv[2]);
 
     Chaines* chaine=lectureChaines(fLecture);
 
@@ -80,13 +79,26 @@ int main(int argc,char** argv){
 
         affiche_graphe(graphe);
 
-        int* distance=PP_chemin(graphe,1);
+        int* distance=parcour_en_largeur(graphe,1);
+        S_file** Chemins=PP_chemins(graphe,1);
         for (int i=1;i<graphe->nbsom+1;i++)
         {
-            printf("Distance 1 %d: %d\n",i,distance[i]);
+            printf("Distance 1 %d: %d; Chemin: ",i,distance[i]);
+            affiche_file(Chemins[i]);
+        }
+
+        for (int i=1;i<graphe->nbsom+1;i++)
+        {
+            while (!estFileVide(Chemins[i]))
+            {
+                defile(Chemins[i]);
+            }
+            free(Chemins[i]);
+            
         }
 
         free(distance);
+        liberer_reseau(reseau_tableH);
 
     }
 

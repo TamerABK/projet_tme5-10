@@ -49,7 +49,8 @@ void ajout_arrete(Sommet* s1,Sommet* s2);
 Commod creerCommod(CellCommodite* C);
 Graphe* creerGraphe(Reseau* r);
 int determine_voisin(Cellule_arete* C,int num);
-int* PP_chemin(Graphe* G,int debut);
+int* parcour_en_largeur(Graphe* G,int debut);
+S_file** PP_chemins(Graphe* G,int debut);
 void affiche_graphe(Graphe* G);
 
 #endif 

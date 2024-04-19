@@ -37,6 +37,18 @@ int defile(S_file *f){
 
 }
 
+void clone_file(S_file* original, S_file* clone){
+
+  Cellule_file* cell_curr=original->tete;
+
+  while (cell_curr)
+  {
+    enfile(clone,cell_curr->val);
+    cell_curr=cell_curr->suiv;
+  }
+  
+}
+
 void affiche_file(S_file *f){
 
   Cellule_file* fl=f->tete;

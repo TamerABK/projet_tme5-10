@@ -27,6 +27,13 @@ void enfile(S_file * f, int donnee);
 /* PREREQUIS: la file ne doit pas etre vide */
 int defile(S_file *f);
 
+// Clone une file dans une autre sans changer l'original
+// PREREQUIS: la clone soit initialiser
+void clone_file(S_file* original, S_file* clone);
+
+
+// Affiche les valeurs dans la file de la tete au dernier
 void affiche_file(S_file *f);
+
 
 #endif 
