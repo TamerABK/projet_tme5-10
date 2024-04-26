@@ -36,7 +36,6 @@ Chaines* lectureChaines(FILE *f){
     }
     
     Chaines* chaine= (Chaines*) malloc(sizeof(Chaines));
-    
     check_pointer(chaine);
 
     char buffer[256];
@@ -44,116 +43,106 @@ Chaines* lectureChaines(FILE *f){
     // LIT LES DEUX PREMIERES LIGNES ET INITIALISE "chaine"
     int temp;
 
-    fgets(buffer,256,f);
-    assert(strncmp(buffer,"NbChain:",8)==0);
-    sscanf(buffer,"NbChain: %d",&temp);
-    chaine->nbChaines=temp;
+    fgets(buffer, 256, f);
+    assert(strncmp(buffer, "NbChain:", 8) == 0);
+    sscanf(buffer, "NbChain: %d", &temp);
+    chaine->nbChaines = temp;
 
-    fgets(buffer,256,f);
-    assert(strncmp(buffer,"Gamma:",6)==0);
-    sscanf(buffer,"Gamma: %d",&temp);
-    chaine->gamma=temp;
+    fgets(buffer, 256, f);
+    assert(strncmp(buffer, "Gamma:", 6) == 0);
+    sscanf(buffer, "Gamma: %d", &temp);
+    chaine->gamma = temp;
 
-    int i,n;
-    char *token;
     CellChaine* cellChaine;
     CellPoint* point;
 
-    while (fgets(buffer,256,f))
-    {
-        
-       char *token=strtok(buffer," ");
+    while (fgets(buffer, 256, f))
+    {       
+       char *token = strtok(buffer, " ");
        check_token(token);
-       i=0;
+       int i = 0;
 
-       //CREE UNE CellChaine, L'INSERT, PUIS INITIALISE SES ATRIBUTS 
-        cellChaine=(CellChaine*)malloc(sizeof(CellChaine));
+       // CREE UNE CellChaine, L'INSERT, PUIS INITIALISE SES ATRIBUTS 
+        cellChaine = (CellChaine*)malloc(sizeof(CellChaine));
         check_pointer(cellChaine);
 
-        cellChaine->suiv=chaine->chaines;
-        chaine->chaines=cellChaine;
+        cellChaine->suiv = chaine->chaines;
+        chaine->chaines = cellChaine;
 
-        cellChaine->numero=atoi(token);
+        cellChaine->numero = atoi(token);
 
-        token=strtok(NULL," ");
+        token = strtok(NULL, " ");
         check_token(token);
-        n=atoi(token);
-        token=strtok(NULL," ");
-    
+        int n = atoi(token);
+        token = strtok(NULL, " ");
         check_token(token);
 
-        while (i<n)
+        while (i < n)
         {
             // CREE LES POINTS ET LES INSERTS
-            point=(CellPoint*)malloc(sizeof(CellPoint));
+            point = (CellPoint*)malloc(sizeof(CellPoint));
             check_pointer(point);
 
-            point->suiv=cellChaine->points;
-            cellChaine->points=point;
+            point->suiv = cellChaine->points;
+            cellChaine->points = point;
 
-            point->x=atof(token);
-            token=strtok(NULL," ");
+            point->x = atof(token);
+            token = strtok(NULL, " ");
             check_token(token);
-            point->y=atof(token);
-            token=strtok(NULL," ");
+            point->y = atof(token);
+            token = strtok(NULL, " ");
 
             i++;
         }
         
     }
     
-    return chaine;
-    
+    return chaine;   
 }
 
-void ecrireChaines(Chaines *C,FILE *f){
+void ecrireChaines(Chaines *C, FILE *f){
 
     check_pointer(C);
+    //par précaution vérifier le fichier
+    check_pointer(f);
 
-    fprintf(f,"NbChain: %d\n",C->nbChaines);
-    fprintf(f,"Gamma: %d\n",C->gamma);
+    fprintf(f, "NbChain: %d\n", C->nbChaines);
+    fprintf(f, "Gamma: %d\n", C->gamma);
 
-    CellChaine *Ch=C->chaines;
-    CellPoint* p;
+    CellChaine *Ch = C->chaines;
+    CellPoint *p;
     double buffer[256];
-    char cat[256],ftos[10];
-    int i,counter,j;
-
-    printf("%p\n",Ch);
+    int i, counter, j;
 
     while (Ch)
     {
-        printf("1\n");
-        p=Ch->points;
-        i=0;
-        counter=0;
+        p = Ch->points;
+        i = 0;
+        counter = 0;
 
         while (p)
         {
-           buffer[i]=p->x;
+           buffer[i] = p->x;
            i++; 
-           buffer[i]=p->y;
+           buffer[i] = p->y;
            i++;
            counter++;
-            p=p->suiv;
+            p = p->suiv;
         }
         
-        fprintf(f,"%d %d ",Ch->numero,counter);
+        fprintf(f, "%d %d ", Ch->numero, counter);
 
-        for(j=0;j<i-1;j++)
+        for(j = 0; j < i - 1; j++)
         {
-            fprintf(f,"%.2f ",buffer[j]);
+            fprintf(f, "%.2f ", buffer[j]);
         }
 
-        fprintf(f,"%.2f\n",buffer[i-1]);
+        fprintf(f, "%.2f\n", buffer[i - 1]);
 
-
-        Ch=Ch->suiv;
-
+        Ch = Ch->suiv;
     }
-
-    
 }
+
 
 void afficheChainesSVG(Chaines *C, char* nomInstance){
     int i;
@@ -248,26 +237,27 @@ void liberer_chaine(Chaines* C)
 {
     check_pointer(C);
 
-    CellChaine* Chsuiv,*Ch=C->chaines;
-    CellPoint* p,*psuiv;
+    CellChaine *Chsuiv, *Ch = C->chaines;
+    CellPoint *p, *psuiv;
 
-    while (!Ch)
+    //c'etait !Ch avant
+    while (Ch)
     {
-        Chsuiv=Ch->suiv;
-        p=Ch->points;
+        Chsuiv = Ch->suiv;
+        p = Ch->points;
 
-        while (!p)
+        while (p)
         {
-            psuiv=p->suiv;
+            psuiv = p->suiv;
             free(p);
-            p=psuiv;
+            p = psuiv;
         }
         
         free(Ch);
-        Ch=Chsuiv;
+        Ch = Chsuiv;
     }
     
     free(C);
-
 }
+	
 	
