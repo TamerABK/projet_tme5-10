@@ -20,7 +20,7 @@ void enfile(S_file * f, int donnee){
     f->tete=nouv;
     f->dernier=nouv;
   }else{
-    f->dernier->suiv=nouv;
+    if(f->dernier!=NULL) f->dernier->suiv=nouv;
     f->dernier=nouv;
   }
 }
@@ -29,8 +29,9 @@ void enfile(S_file * f, int donnee){
 int defile(S_file *f){
   int v=f->tete->val;
   Cellule_file *temp=f->tete;
-  if (f->tete==f->dernier)
+  if (f->tete==f->dernier){
     f->dernier=NULL;
+  }
   f->tete=f->tete->suiv;
   free(temp);
   return v;

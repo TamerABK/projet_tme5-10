@@ -51,6 +51,8 @@ Graphe* creerGraphe(Reseau* r);
 int determine_voisin(Cellule_arete* C,int num);
 int* parcour_en_largeur(Graphe* G,int debut);
 S_file** PP_chemins(Graphe* G,int debut);
+S_file* chaine_commod(Graphe* G, int debut,int fin);
+int reorganiseReseau(Reseau* R);
 void affiche_graphe(Graphe* G);
 
 #endif 
