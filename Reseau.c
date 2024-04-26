@@ -8,119 +8,126 @@
 #include <math.h>
 
 void ajoutevoisin(Noeud* v1,Noeud* v2){
-   
     check_pointer(v1);
     check_pointer(v2);
-
     
-   CellNoeud* cell_curr=v1->voisins;
-   
-    //Verifie si les deux noeuds sont deja voisins    
-   while (cell_curr)
-   {
-
-        if(cell_curr->nd->num==v2->num){ return ;}
-        cell_curr=cell_curr->suiv;
-   }
-    // Ajoute le voisin s'il n'existe pas deja
+    // Vérifie si les deux noeuds sont déjà voisins
+    CellNoeud* cell_curr = v1->voisins;
+    while (cell_curr) {
+        if (cell_curr->nd->num == v2->num) {
+            return;
+        }
+        cell_curr = cell_curr->suiv;
+    }
     
-    CellNoeud* cell_cree=(CellNoeud*)malloc(sizeof(CellNoeud));
+    // Ajoute le voisin s'il n'existe pas déjà
+    CellNoeud* cell_cree = (CellNoeud*)malloc(sizeof(CellNoeud));
     check_pointer(cell_cree);
-    
-    cell_cree->nd=v2;
-    cell_cree->suiv=v1->voisins;
-    v1->voisins=cell_cree;
-
+    cell_cree->nd = v2;
+    cell_cree->suiv = v1->voisins;
+    v1->voisins = cell_cree;
 }
 
-
-Noeud* rechercheCreeNoeudListe(Reseau *R,double x, double y,int* counter)
-{
+Noeud* rechercheCreeNoeudListe(Reseau *R, double x, double y) {
     check_pointer(R);
 
-    CellNoeud* Cn=R->noeuds;
-    Noeud* N;
+    CellNoeud* Cn = R->noeuds;
+    Noeud* N = NULL; // mettre à null
 
-    while (Cn)
-    {
-        N=Cn->nd;
-        if(N->x==x && N->y==y)
-        {
-            return N;
-        }
-        Cn=Cn->suiv;
-    }
-
-    if(!Cn)
-    {
-        N=(Noeud*)malloc(sizeof(Noeud));
-        N->x=x;N->y=y;N->num=R->nbNoeuds+1;
-        R->nbNoeuds++;
-        Cn=(CellNoeud*)malloc(sizeof(CellNoeud));
-        Cn->nd=N;Cn->suiv=R->noeuds;
-        R->noeuds=Cn;
-        if(counter) (*counter)++;
+    while (Cn != NULL) {
+        N = Cn->nd;
+    printf("Noeud %d : x = %d, y = %d\n", N->num, N->x, N->y); // printf pour debug
+    if (N->x == x && N->y == y) {
         return N;
     }
-
-    
-    
-}
-
-Reseau* reconstitueReseauListe(Chaines *C){
-
-    check_pointer(C);
-
-    //Cree et intialise gamma du reseau a rendre    
-
-    Reseau *reseau=(Reseau*)malloc(sizeof(Reseau));
-    reseau->gamma=C->gamma;
-    // Variable pour parcourir la chaine,compter les noeuds et cree les noeuds et commodite
-    CellChaine *Cell_curr=C->chaines;
-    CellPoint* point_curr;
-    int counter=0;
-    Noeud* noeud_cree,* noeud_a_relier=NULL;
-    CellNoeud* cellnoeud_cree;
-    CellCommodite* commodite_cree;
-
-    while (Cell_curr)
-    {
-        point_curr=Cell_curr->points;
-
-        CellCommodite *commodite_cree=(CellCommodite*)malloc(sizeof(CellCommodite));
-
-        while (point_curr)
-        {
-            noeud_cree= rechercheCreeNoeudListe(reseau,point_curr->x,point_curr->y,&counter);
-            
-            if (!commodite_cree->extrA) commodite_cree->extrA=noeud_cree;
-
-            
-            if (noeud_a_relier){
-                ajoutevoisin(noeud_cree,noeud_a_relier);
-                ajoutevoisin(noeud_a_relier,noeud_cree);
-            } 
-                
-            
-            noeud_a_relier=noeud_cree;
-            point_curr=point_curr->suiv;
-
-        }
-        // Cree une commodite
-        commodite_cree->extrB=noeud_a_relier;
-        commodite_cree->suiv=reseau->commodites;
-        reseau->commodites=commodite_cree;
-
-        Cell_curr=Cell_curr->suiv;
-        noeud_a_relier=NULL;
-
+        Cn = Cn->suiv;
     }
 
-    reseau->nbNoeuds=counter;
-    
-    return reseau;
+    // si noeud pas trouvé, alors le créer
+    N = (Noeud*)malloc(sizeof(Noeud));
+    if (N == NULL) {
+        fprintf(stderr, "erreur de l'allocation mémoire pour le noeud\n");
+        exit(EXIT_FAILURE);
+    }
+    N->x = x;
+    N->y = y;
+    //ici on incrémente direct le nb de noeuds au lieu d'utiliser un counter
+    N->num = R->nbNoeuds + 1;
+    R->nbNoeuds++;
 
-    
+    // création cellule noeud et insertion en tête
+    CellNoeud* cell_noeud = (CellNoeud*)malloc(sizeof(CellNoeud));
+    if (cell_noeud == NULL) {
+        //cas échec de l'allocation mémoire
+        fprintf(stderr, "erreur échec de l'allocation mémoire pour la cellule noeud\n");
+        free(N);
+        exit(EXIT_FAILURE);
+    }
+    cell_noeud->nd = N;
+    cell_noeud->suiv = R->noeuds;
+    R->noeuds = cell_noeud;
+
+    return N;
+}
+
+
+
+Reseau* reconstitueReseauListe(Chaines *C) {
+    check_pointer(C);
+
+    // Création et initialisation du réseau à rendre
+    Reseau *reseau = (Reseau*)malloc(sizeof(Reseau));
+    if (reseau == NULL) {
+        fprintf(stderr, "échec allocation mémoire\n");
+        exit(EXIT_FAILURE);
+    }
+    reseau->gamma = C->gamma;
+
+    CellChaine *Cell_curr = C->chaines;
+    CellPoint *point_curr;
+    reseau->nbNoeuds = 0;
+    Noeud* noeud_a_relier = NULL;
+
+    while (Cell_curr) {
+        point_curr = Cell_curr->points;
+
+        CellCommodite *commodite_cree = NULL;
+
+        while (point_curr) {
+            Noeud* noeud_cree = rechercheCreeNoeudListe(reseau, point_curr->x, point_curr->y);
+            reseau->nbNoeuds++;
+            
+            if (commodite_cree == NULL) {
+                commodite_cree = (CellCommodite*)malloc(sizeof(CellCommodite));
+                if (commodite_cree == NULL) {
+                    fprintf(stderr, "échec allocation mémoire pour la commodité\n");
+                    liberer_reseau(reseau); // libérer absolument même s'il y a erreur d'allocation
+                    exit(EXIT_FAILURE);
+                }
+                commodite_cree->extrA = noeud_cree;
+            }
+
+            if (noeud_a_relier) {
+                ajoutevoisin(noeud_cree, noeud_a_relier);
+                ajoutevoisin(noeud_a_relier, noeud_cree);
+            }
+
+            noeud_a_relier = noeud_cree;
+            point_curr = point_curr->suiv;
+        }
+
+        // création d'une commodité si elle a été initialisée
+        if (commodite_cree != NULL) {
+            commodite_cree->extrB = noeud_a_relier;
+            commodite_cree->suiv = reseau->commodites;
+            reseau->commodites = commodite_cree;
+        }
+
+        Cell_curr = Cell_curr->suiv;
+        noeud_a_relier = NULL;
+    }
+
+    return reseau;
 }
 
 
@@ -153,7 +160,6 @@ void afficheReseauSVG(Reseau *R, char* nomInstance){
 }
 
 int nbCommodites(Reseau *R){
-
     check_pointer(R);
     int counter=0;
     CellCommodite* cell_commodite=R->commodites;
@@ -165,7 +171,6 @@ int nbCommodites(Reseau *R){
     }
 
     return counter;
-    
 }
 
 int nbLiaisons(Reseau *R){
@@ -192,12 +197,8 @@ int nbLiaisons(Reseau *R){
         
     }
 
-    return counter/*(int)(ceil((float)counter/2))*/;
-    
+    return counter;
 }
-
-
-// FONCTION D'ECRITURE
 
 void ecrireReseau(Reseau *R, FILE *F){
     check_pointer(R);
@@ -238,7 +239,6 @@ void ecrireReseau(Reseau *R, FILE *F){
         
     }
 
-
     fprintf(F,"\n");
 
     CellCommodite* cell_commod_curr=R->commodites;
@@ -248,33 +248,39 @@ void ecrireReseau(Reseau *R, FILE *F){
         fprintf(F,"k %d %d\n",cell_commod_curr->extrA->num,cell_commod_curr->extrB->num);
         cell_commod_curr=cell_commod_curr->suiv;
     }
-    
-
 }
 
-
-void liberer_reseau(Reseau *R){
+void liberer_reseau(Reseau *R) {
     check_pointer(R);
 
-    CellCommodite* commod_suiv,* commod_curr= R->commodites;
-
-    while (commod_curr)
-    {
-        commod_suiv=commod_curr->suiv;
+    // liberer liste commodités
+    CellCommodite *commod_curr = R->commodites;
+    CellCommodite *commod_suiv;
+    while (commod_curr) {
+        commod_suiv = commod_curr->suiv;
         free(commod_curr);
-        commod_curr=commod_suiv;
+        commod_curr = commod_suiv;
     }
 
-    CellNoeud* cell_suiv,* cell_curr=R->noeuds;
+    // liberer liste des noeuds
+    CellNoeud *noeud_curr = R->noeuds;
+    CellNoeud *noeud_suiv;
+    while (noeud_curr) {
+        // liberer la liste des voisins pour chaque noeud
+        CellNoeud *voisin_curr = noeud_curr->nd->voisins;
+        CellNoeud *voisin_suiv;
+        while (voisin_curr) {
+            voisin_suiv = voisin_curr->suiv;
+            free(voisin_curr);
+            voisin_curr = voisin_suiv;
+        }
+        // free le noeud lui-même
+        free(noeud_curr->nd);
 
-    while (cell_curr)
-    {
-        cell_suiv=cell_curr->suiv;
-        free(cell_curr->nd);
-        free(cell_curr);
-        cell_curr=cell_suiv;
+        noeud_suiv = noeud_curr->suiv;
+        free(noeud_curr);
+        noeud_curr = noeud_suiv;
     }
 
     free(R);
-    
 }
