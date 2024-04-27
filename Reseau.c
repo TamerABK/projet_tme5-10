@@ -36,7 +36,7 @@ Noeud* rechercheCreeNoeudListe(Reseau *R, double x, double y) {
 
     while (Cn != NULL) {
         N = Cn->nd;
-    printf("Noeud %d : x = %d, y = %d\n", N->num, N->x, N->y); // printf pour debug
+    // printf("Noeud %d : x = %f, y = %f\n", N->num, N->x, N->y); // printf pour debug
     if (N->x == x && N->y == y) {
         return N;
     }

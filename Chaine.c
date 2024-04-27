@@ -38,17 +38,17 @@ Chaines* lectureChaines(FILE *f){
     Chaines* chaine= (Chaines*) malloc(sizeof(Chaines));
     check_pointer(chaine);
 
-    char buffer[256];
+    char buffer[5000];
 
     // LIT LES DEUX PREMIERES LIGNES ET INITIALISE "chaine"
     int temp;
 
-    fgets(buffer, 256, f);
+    fgets(buffer, 5000, f);
     assert(strncmp(buffer, "NbChain:", 8) == 0);
     sscanf(buffer, "NbChain: %d", &temp);
     chaine->nbChaines = temp;
 
-    fgets(buffer, 256, f);
+    fgets(buffer, 5000, f);
     assert(strncmp(buffer, "Gamma:", 6) == 0);
     sscanf(buffer, "Gamma: %d", &temp);
     chaine->gamma = temp;
@@ -56,7 +56,7 @@ Chaines* lectureChaines(FILE *f){
     CellChaine* cellChaine;
     CellPoint* point;
 
-    while (fgets(buffer, 256, f))
+    while (fgets(buffer, 5000, f))
     {       
        char *token = strtok(buffer, " ");
        check_token(token);

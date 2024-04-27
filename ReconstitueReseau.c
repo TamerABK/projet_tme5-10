@@ -21,13 +21,13 @@ int main(int argc,char** argv){
     //  }
 
     // FILE* fLecture=fopen(argv[1],"r");
-    FILE* fLecture=fopen("00014_burma.cha","r");
+    FILE* fLecture=fopen("07397_pla.cha","r");
     check_pointer(fLecture);
     FILE* fEcriture=fopen("test2.res","w");
     check_pointer(fEcriture);
 
     // int methode_choisie=atoi(argv[2]);
-    int methode_choisie=4;
+    int methode_choisie=1;
 
     Chaines* chaine=lectureChaines(fLecture);
 
@@ -80,11 +80,11 @@ int main(int argc,char** argv){
 
         affiche_graphe(graphe);
 
-        int* distance=parcour_en_largeur(graphe,1);
-        S_file** Chemins=PP_chemins(graphe,1);
+        int* distance=parcour_en_largeur(graphe,2);
+        S_file** Chemins=PP_chemins(graphe,2);
         for (int i=1;i<graphe->nbsom+1;i++)
         {
-            printf("Distance 1 %d: %d; Chemin: ",i,distance[i]);
+            printf("Distance 2 %d: %d; Chemin: ",i,distance[i]);
             affiche_file(Chemins[i]);
          }
 
@@ -98,7 +98,7 @@ int main(int argc,char** argv){
             
          }
 
-        printf("Organise retourne %d\n",reorganiseReseau(reseau_tableH));
+        // printf("Organise retourne %d\n",reorganiseReseau(reseau_tableH));
 
         free(distance);
         liberer_reseau(reseau_tableH);

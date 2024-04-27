@@ -65,7 +65,7 @@ ArbreQuat* creerArbreQuat(double xc, double yc, double coteX,double coteY){
 	return ab;
 }
 
-ArbreQuat* trouve_dir(ArbreQuat* parent,int x, int y){
+ArbreQuat** trouve_dir(ArbreQuat* parent,int x, int y){
 	
 	check_pointer(parent);
 
@@ -73,21 +73,21 @@ ArbreQuat* trouve_dir(ArbreQuat* parent,int x, int y){
 	{
 		if (parent->yc<=y)
 		{	
-			printf("Nord est\n");
-			return parent->ne;
+			// printf("Nord est\n");
+			return &(parent->ne);
 		}else{
-			printf("Sud est\n");
-			return parent->se;
+			// printf("Sud est\n");
+			return &(parent->se);
 		}
 		
 	}else{
 		if (parent->yc<=y)
 		{
-			printf("Nord ouest\n");
-			return parent->no;
+			// printf("Nord ouest\n");
+			return &(parent->no);
 		}else{
-			printf("Sud ouest\n");
-			return parent->so;
+			// printf("Sud ouest\n");
+			return &(parent->so);
 		}
 	}
 }
@@ -99,17 +99,17 @@ void calcul_centre(ArbreQuat* parent,Noeud *n, double *xnew, double *ynew){
 	check_pointer(n);
 	if(parent->xc<=n->x)
 	{
-		*xnew=parent->xc +(parent->coteX/4);
+		*xnew=parent->xc +((parent->coteX*1.0)/4.0);
 		
 	}else{
-		*xnew=parent->xc -(parent->coteX/4);
+		*xnew=parent->xc -((parent->coteX*1.0)/4.0);
 	}
 
 	if(parent->yc<=n->y)
 	{
-		*ynew=parent->yc+(parent->coteY/4);
+		*ynew=parent->yc+((parent->coteY*1.0)/4.0);
 	}else{
-		*ynew=parent->yc-(parent->coteY/4);
+		*ynew=parent->yc-((parent->coteY*1.0)/4.0);
 	}
 
 }
@@ -119,14 +119,17 @@ void insererNoeudArbre(Noeud* n, ArbreQuat** a,ArbreQuat* parent){
 	check_pointer(parent);
 	check_pointer(n);
 	// Si a est vide
-	if (*a==NULL)
+	if ((*a)==NULL)
 	{
-		int coteX=parent->xc/2;
-		int coteY=parent->yc/2;
+		printf("a est Null\n");
+		double coteX=(parent->xc*1.0)/2.0;
+		double coteY=(parent->yc*1.0)/2.0;
 		double x,y;
 		calcul_centre(parent,n,&x,&y);
 		*a=creerArbreQuat(x,y,coteX,coteY);
+		printf("%p\n",*a);
 		(*a)->noeud=n;
+		printf("%d\n",(*a)->noeud->num);
 		return;
     }
 
@@ -134,23 +137,25 @@ void insererNoeudArbre(Noeud* n, ArbreQuat** a,ArbreQuat* parent){
 	// Si a est une feuille
 	if((*a)->noeud!=NULL)
 	{
+		printf("a est une feuille\n");
 		Noeud* noeud_deplace=(*a)->noeud;
 		(*a)->noeud=NULL;
-		ArbreQuat* direction=trouve_dir(*a,noeud_deplace->x,noeud_deplace->y);
-		insererNoeudArbre(noeud_deplace,&direction,*a);
+		ArbreQuat** direction=trouve_dir(*a,noeud_deplace->x,noeud_deplace->y);
+		insererNoeudArbre(noeud_deplace,direction,*a);
 
 		direction=trouve_dir(*a,n->x,n->y);
-		insererNoeudArbre(n,&direction,*a);
+		insererNoeudArbre(n,direction,*a);
 		
+		// printf
 		
 		return;
 	}
 	// Si a est une cellule interne
-	if((*a !=NULL)&&(*a)->noeud==NULL )
+	if(((*a) !=NULL)&&(*a)->noeud==NULL )
 	{	
 		
-		ArbreQuat* direction=trouve_dir(*a,n->x,n->y);
-		insererNoeudArbre(n,&direction,*a);
+		ArbreQuat** direction=trouve_dir(*a,n->x,n->y);
+		insererNoeudArbre(n,direction,*a);
 		
 		return;
 	}
@@ -172,9 +177,10 @@ Noeud* ajouteCellReseau(Reseau *R,double x, double y){
 
 Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent,double x, double y){
 	// a est vide
-
-	if (*a==NULL)
+	printf("rechercheCreeNoeudArbre\n");
+	if ((*a)==NULL)
 	{	
+		printf("a est Null\n");
 		Noeud* noeud_cree= ajouteCellReseau(R,x,y);
 		insererNoeudArbre(noeud_cree,a,parent);
 		return noeud_cree;
@@ -182,7 +188,7 @@ Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent,doubl
 	// a est une feuille
 	if((*a)->noeud!=NULL)
 	{
-		
+		printf("a est une feuille\n");
 		if(((*a)->noeud->x!=x) &&((*a)->noeud->y!=y))
 		{	
 			
@@ -198,10 +204,10 @@ Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent,doubl
 		}
 	}
 	// a est une cellule
-	if((*a !=NULL)&&(*a)->noeud==NULL)
+	if(((*a) !=NULL)&&(*a)->noeud==NULL)
 	{
-		ArbreQuat* direction=trouve_dir(*a,x,y);
-		rechercheCreeNoeudArbre(R,&direction,*a,x,y);
+		ArbreQuat** direction=trouve_dir(*a,x,y);
+		rechercheCreeNoeudArbre(R,direction,*a,x,y);
 	}
 
 
@@ -228,7 +234,7 @@ Reseau* reconstitueReseauArbre(Chaines* C) {
 	CellPoint* pt=NULL;
     CellCommodite *commodite_cree=NULL;
     Noeud* nouveau=NULL,*noeud_a_relier=NULL;
-	ArbreQuat* fils=NULL; 
+	ArbreQuat** fils=NULL; 
 
 	reseau->nbNoeuds=0;
 	reseau->gamma=C->gamma;
@@ -238,8 +244,8 @@ Reseau* reconstitueReseauArbre(Chaines* C) {
     chaineCoordMinMax(C, &xmin, &ymin, &xmax, &ymax);
     double coteX = xmax - xmin;
     double coteY = ymax - ymin;
-    double xc = xmax - coteX/2;
-    double yc = ymax - coteY/2;
+    double xc = xmax - (coteX*1.0)/2.0;
+    double yc = ymax - (coteY*1.0)/2.0;
     
 	ArbreQuat* arbre = creerArbreQuat(xc, yc, coteX,coteY); 
 	while (Cell_curr)
@@ -250,8 +256,7 @@ Reseau* reconstitueReseauArbre(Chaines* C) {
 
         while(pt != NULL){
 			fils=trouve_dir(arbre,pt->x,pt->y);
-			printf("%p\n",fils);
-            nouveau = rechercheCreeNoeudArbre(reseau,&fils,arbre,pt->x,pt->y);
+            nouveau = rechercheCreeNoeudArbre(reseau,fils,arbre,pt->x,pt->y);
             if (!commodite_cree->extrA) commodite_cree->extrA=nouveau;
             if (noeud_a_relier){
                 ajoutevoisin(nouveau,noeud_a_relier);
