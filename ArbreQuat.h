@@ -19,13 +19,14 @@ void chaineCoordMinMax(Chaines* C, double* xmin, double*
 ymin, double* xmax, double* ymax);
 ArbreQuat* creerArbreQuat(double xc, double yc, double coteX,
 double coteY);
-ArbreQuat** trouve_dir(ArbreQuat* parent,int x, int y);
+ArbreQuat** trouve_dir(ArbreQuat* parent,double x, double y);
 void calcul_centre(ArbreQuat* parent,Noeud *n, double *xnew, double *ynew);
 void insererNoeudArbre(Noeud* n, ArbreQuat** a,ArbreQuat* parent);
 Noeud* ajouteCellReseau(Reseau *R,double x, double y);
 Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent,double x, double y);
 void creerListeCommodites(Chaines* C, Reseau* R);
 void libererArbreQuat(ArbreQuat* a);
+void print_arbre(ArbreQuat* A);
 Reseau* reconstitueReseauArbre(Chaines* C);
 
 #endif

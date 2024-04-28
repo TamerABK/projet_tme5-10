@@ -65,7 +65,7 @@ ArbreQuat* creerArbreQuat(double xc, double yc, double coteX,double coteY){
 	return ab;
 }
 
-ArbreQuat** trouve_dir(ArbreQuat* parent,int x, int y){
+ArbreQuat** trouve_dir(ArbreQuat* parent,double x, double y){
 	
 	check_pointer(parent);
 
@@ -121,15 +121,15 @@ void insererNoeudArbre(Noeud* n, ArbreQuat** a,ArbreQuat* parent){
 	// Si a est vide
 	if ((*a)==NULL)
 	{
-		printf("a est Null\n");
+		// printf("a est Null\n");
 		double coteX=(parent->xc*1.0)/2.0;
 		double coteY=(parent->yc*1.0)/2.0;
 		double x,y;
 		calcul_centre(parent,n,&x,&y);
 		*a=creerArbreQuat(x,y,coteX,coteY);
-		printf("%p\n",*a);
+		// printf("%p\n",*a);
 		(*a)->noeud=n;
-		printf("%d\n",(*a)->noeud->num);
+		// printf("%d\n",(*a)->noeud->num);
 		return;
     }
 
@@ -137,7 +137,7 @@ void insererNoeudArbre(Noeud* n, ArbreQuat** a,ArbreQuat* parent){
 	// Si a est une feuille
 	if((*a)->noeud!=NULL)
 	{
-		printf("a est une feuille\n");
+		// printf("a est une feuille\n");
 		Noeud* noeud_deplace=(*a)->noeud;
 		(*a)->noeud=NULL;
 		ArbreQuat** direction=trouve_dir(*a,noeud_deplace->x,noeud_deplace->y);
@@ -177,10 +177,10 @@ Noeud* ajouteCellReseau(Reseau *R,double x, double y){
 
 Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent,double x, double y){
 	// a est vide
-	printf("rechercheCreeNoeudArbre\n");
+	// printf("rechercheCreeNoeudArbre\n");
 	if ((*a)==NULL)
 	{	
-		printf("a est Null\n");
+		// printf("a est Null\n");
 		Noeud* noeud_cree= ajouteCellReseau(R,x,y);
 		insererNoeudArbre(noeud_cree,a,parent);
 		return noeud_cree;
@@ -188,7 +188,7 @@ Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent,doubl
 	// a est une feuille
 	if((*a)->noeud!=NULL)
 	{
-		printf("a est une feuille\n");
+		// printf("a est une feuille\n");
 		if(((*a)->noeud->x!=x) &&((*a)->noeud->y!=y))
 		{	
 			
@@ -225,6 +225,18 @@ void libererArbreQuat(ArbreQuat* a) {
     libererArbreQuat(a->ne);
 
     free(a);
+}
+
+void print_arbre(ArbreQuat* A){
+
+	if(!A) return;
+	if (A->noeud){ printf("%d\n",A->noeud->num); return;}
+
+	print_arbre(A->ne);
+	print_arbre(A->no);
+	print_arbre(A->se);
+	print_arbre(A->so);
+
 }
 
 Reseau* reconstitueReseauArbre(Chaines* C) {
@@ -265,7 +277,8 @@ Reseau* reconstitueReseauArbre(Chaines* C) {
             noeud_a_relier=nouveau;
             pt = pt->suiv;
         }
-
+		// printf("--------------------\n");
+		// print_arbre(arbre);
         commodite_cree->extrB=noeud_a_relier;
         commodite_cree->suiv=reseau->commodites;
         reseau->commodites=commodite_cree;
@@ -277,7 +290,7 @@ Reseau* reconstitueReseauArbre(Chaines* C) {
 
 	
     libererArbreQuat(arbre);
-	printf("%d\n", reseau->nbNoeuds);
+	// printf("%d\n", reseau->nbNoeuds);
     return reseau;
 }
 

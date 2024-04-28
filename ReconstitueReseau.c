@@ -21,13 +21,13 @@ int main(int argc,char** argv){
     //  }
 
     // FILE* fLecture=fopen(argv[1],"r");
-    FILE* fLecture=fopen("07397_pla.cha","r");
+    FILE* fLecture=fopen("00014_burma.cha","r");
     check_pointer(fLecture);
     FILE* fEcriture=fopen("test2.res","w");
     check_pointer(fEcriture);
 
     // int methode_choisie=atoi(argv[2]);
-    int methode_choisie=1;
+    int methode_choisie=3;
 
     Chaines* chaine=lectureChaines(fLecture);
 
