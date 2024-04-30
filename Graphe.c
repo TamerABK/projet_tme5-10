@@ -228,21 +228,7 @@ S_file* chaine_commod(Graphe* G, int debut,int fin){
     S_file** Chemins=PP_chemins(G,debut);
     S_file* chaine_commod=Chemins[fin];
 
-    for (int i=1;i<G->nbsom+1;i++)
-    {
-        // printf("%d\n",i);
-        if (i!=fin)
-        {
-            while (!estFileVide(Chemins[i]))
-            {
-                defile(Chemins[i]);
-            }
-            free(Chemins[i]);
-        }
-        
-            
-    }
-
+    free(Chemins);
     return chaine_commod;
 }
 
@@ -270,22 +256,20 @@ int reorganiseReseau(Reseau* R){
     {   
         debut=G->T_commod[i].e1;
         fin=G->T_commod[i].e2;
-        PP_chaine_commod=chaine_commod(G,debut,fin);
+        printf("Avant PPchaine\n");PP_chaine_commod=chaine_commod(G,debut,fin);
         affiche_file(PP_chaine_commod);
         u=defile(PP_chaine_commod);
-        printf("u:%d\n",u);
-        // affiche_file(PP_chaine_commod);
-        printf("%p\n",PP_chaine_commod->tete);
+        affiche_file(PP_chaine_commod);
         while (!estFileVide(PP_chaine_commod))
         {   
-            v=defile(PP_chaine_commod);printf("On a defile\n");
-            
-            matrice_passage[u][v]=matrice_passage[u][v]+1;printf("On incremente la matrice\n");
-            
-            u=v;printf("On avance\n");
+            v=defile(PP_chaine_commod);
+            affiche_file(PP_chaine_commod);
+            matrice_passage[u][v]=matrice_passage[u][v]+1;
+            u=v;
         }
-
+        printf("Tour %d complet\n",i);
     }
+
     printf("STEP THREE\n");
     for(int i=0;i<G->nbsom+1;i++)
     {

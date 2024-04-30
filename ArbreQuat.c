@@ -127,7 +127,7 @@ void insererNoeudArbre(Noeud* n, ArbreQuat** a,ArbreQuat* parent){
 		double coteY=(parent->yc*1.0)/2.0;
 		double x=__INT_MAX__,y=__INT_MAX__;
 		calcul_centre(parent,n,&x,&y);
-		printf("%f %f\n",x,y);
+		// printf("%f %f\n",x,y);
 		*a=creerArbreQuat(x,y,coteX,coteY);
 		(*a)->noeud=n;
 		return;
@@ -276,8 +276,8 @@ Reseau* reconstitueReseauArbre(Chaines* C) {
             noeud_a_relier=nouveau;
             pt = pt->suiv;
         }
-		printf("--------------------\n");
-		print_arbre(arbre);
+		// printf("--------------------\n");
+		// print_arbre(arbre);
         commodite_cree->extrB=noeud_a_relier;
         commodite_cree->suiv=reseau->commodites;
         reseau->commodites=commodite_cree;
@@ -289,6 +289,6 @@ Reseau* reconstitueReseauArbre(Chaines* C) {
 
 	
     libererArbreQuat(arbre);
-	printf("%d\n", reseau->nbNoeuds);
+	// printf("%d\n", reseau->nbNoeuds);
     return reseau;
 }
