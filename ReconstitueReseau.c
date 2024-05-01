@@ -101,8 +101,13 @@ int main(int argc,char** argv){
         printf("Organise retourne %d\n",reorganiseReseau(reseau_tableH));
 
         free(distance);
-        liberer_reseau(reseau_tableH);
 
+        printf("avant liberer graphe\n");
+        libererGraphe(graphe);
+        printf("après liberer graphe\n");
+
+        liberer_reseau(reseau_tableH);
+        printf("après liberer reseau\n");
     }
 
     if(methode_choisie > 4){
