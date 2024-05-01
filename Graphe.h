@@ -54,6 +54,7 @@ S_file** PP_chemins(Graphe* G,int debut);
 S_file* chaine_commod(Graphe* G, int debut,int fin);
 int reorganiseReseau(Reseau* R);
 void affiche_graphe(Graphe* G);
+void libererGraphe(Graphe* G);
 
 #endif 
 
