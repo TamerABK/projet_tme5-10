@@ -303,3 +303,30 @@ void affiche_graphe(Graphe* G){
 
     }
 }
+
+void libererGraphe(Graphe* G) {
+    if (G == NULL) return;
+
+    // libere sommets
+    for (int i = 0; i < G->nbsom + 1; i++) {
+        Sommet* s = G->T_som[i];
+        if (s != NULL) {
+            // liste des voisins
+            Cellule_arete* cell = s->L_voisin;
+            while (cell != NULL) {
+                Cellule_arete* tmp = cell;
+                cell = cell->suiv;
+                free(tmp->a);
+                free(tmp);
+            }
+            free(s);
+        }
+    }
+    free(G->T_som);
+
+    // commodités
+    free(G->T_commod);
+
+    free(G);
+}
+
